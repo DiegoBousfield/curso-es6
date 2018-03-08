@@ -20,6 +20,18 @@ class App {
       this.addRepository(event);
   }
 
+  setLoading(loading = true) {
+    if (loading === true) {
+      const loadingEl = document.createElement('span');
+      loadingEl.appendChild(document.createTextNode('Carregando...'));
+      loadingEl.setAttribute('id', 'loading');
+
+      this.formEl.appendChild(loadingEl);
+    } else {
+      document.getElementById('loading').remove();
+    }
+  }
+
   async addRepository(event) {
     event.preventDefault();
 
@@ -28,20 +40,28 @@ class App {
     if (repoInput.length === 0) 
       return;
 
-    const response = await this.api.get(`/repos/${repoInput}`);
+    this.setLoading();
 
-    const { name, description, html_url, owner: { avatar_url } } = response.data;
+    try {
+      const response = await this.api.get(`/repos/${repoInput}`);
 
-    this.repositories.push({
-      avatar_url,
-      name,
-      description,
-      html_url,
-    });
+      this.inputEl.value = '';
+      
+      const { name, description, html_url, owner: { avatar_url } } = response.data;
 
-    this.inputEl.value = '';
+      this.repositories.push({
+        avatar_url,
+        name,
+        description,
+        html_url,
+      });
 
-    this.render();
+      this.render();
+    } catch (err) {
+      alert('Repositório inexistente');
+    }
+
+    this.setLoading(false);
   }
 
   render() {

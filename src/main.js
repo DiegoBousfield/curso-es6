@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from './api';
 
 class App {
   constructor() {
@@ -8,22 +8,17 @@ class App {
     this.inputEl = document.querySelector('input[name=repository]');
     this.listEl = document.getElementById('repo-list');
 
-    this.api = axios.create({
-      baseURL: 'https://api.github.com',
-    });
-    
-    this.registerListeners();
+    this.registerHandlers();
   }
 
-  registerListeners() {
-    this.formEl.onsubmit = event => 
-      this.addRepository(event);
+  registerHandlers() {
+    this.formEl.onsubmit = event => this.addRepository(event);
   }
 
   setLoading(loading = true) {
     if (loading === true) {
-      const loadingEl = document.createElement('span');
-      loadingEl.appendChild(document.createTextNode('Carregando...'));
+      let loadingEl = document.createElement('span');
+      loadingEl.appendChild(document.createTextNode('Carregando'));
       loadingEl.setAttribute('id', 'loading');
 
       this.formEl.appendChild(loadingEl);
@@ -37,28 +32,28 @@ class App {
 
     const repoInput = this.inputEl.value;
 
-    if (repoInput.length === 0) 
+    if (repoInput.length === 0)
       return;
 
     this.setLoading();
 
     try {
-      const response = await this.api.get(`/repos/${repoInput}`);
+      const response = await api.get(`/repos/${repoInput}`);
 
-      this.inputEl.value = '';
-      
       const { name, description, html_url, owner: { avatar_url } } = response.data;
 
       this.repositories.push({
-        avatar_url,
         name,
         description,
+        avatar_url,
         html_url,
       });
 
+      this.inputEl.value = '';
+
       this.render();
     } catch (err) {
-      alert('Repositório inexistente');
+      alert('O repositório não existe!');
     }
 
     this.setLoading(false);
@@ -70,20 +65,19 @@ class App {
     this.repositories.forEach(repo => {
       let imgEl = document.createElement('img');
       imgEl.setAttribute('src', repo.avatar_url);
-      
+
       let titleEl = document.createElement('strong');
       titleEl.appendChild(document.createTextNode(repo.name));
-      
+
       let descriptionEl = document.createElement('p');
       descriptionEl.appendChild(document.createTextNode(repo.description));
-      
+
       let linkEl = document.createElement('a');
-        
-      linkEl.appendChild(document.createTextNode('Acessar'));
       linkEl.setAttribute('target', '_blank');
+      linkEl.setAttribute('href', repo.html_url);
+      linkEl.appendChild(document.createTextNode('Acessar'));
 
       let listItemEl = document.createElement('li');
-
       listItemEl.appendChild(imgEl);
       listItemEl.appendChild(titleEl);
       listItemEl.appendChild(descriptionEl);

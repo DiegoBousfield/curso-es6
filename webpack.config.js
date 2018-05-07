@@ -1,11 +1,13 @@
+const path = require('path');
+
 module.exports = {
-  entry: ['@babel/polyfill', './src/main.js'],
+  entry: ['@babel/polyfill', path.join(__dirname, 'src', 'main.js')],
   output: {
-    path: __dirname + '/public',
+    path: path.join(__dirname, 'public'),
     filename: 'bundle.js',
   },
   devServer: {
-    contentBase: __dirname + '/public'
+    contentBase: path.join(__dirname, 'public')
   },
   module: {
     rules: [

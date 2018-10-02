@@ -7,7 +7,7 @@ Todos os exercícios abaixo necessitam que você esteja com o plugin do Async/Aw
 Transforme os seguintes trechos de código utilizando async/await:
 
 ```js
-// Funão delay aciona o .then após 1s
+// Função delay aciona o .then após 1s
 const delay = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 function umPorSegundo() {
